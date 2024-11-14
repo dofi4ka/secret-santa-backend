@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -76,6 +77,12 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@auth_router.get("/users/me")
-async def read_users_me(current_user: Admin = Depends(get_current_admin)):
-    return current_user
+@dataclass
+class Me:
+    id: int
+    username: str
+
+
+@auth_router.get("/me")
+async def read_me(current_admin: Admin = Depends(get_current_admin)) -> Me:
+    return Me(id=current_admin.id, username=current_admin.username)
