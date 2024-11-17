@@ -1,5 +1,5 @@
 -- name: ListUsers :many
-SELECT users.*, (telegram_users.id IS NOT NULL)::BOOLEAN as telegram_activated FROM users
+SELECT users.*, CAST((telegram_users.id IS NOT NULL) AS BOOLEAN) as telegram_activated FROM users
 LEFT JOIN telegram_users ON users.telegram_id = telegram_users.id;
 
 -- name: CreateUser :one
