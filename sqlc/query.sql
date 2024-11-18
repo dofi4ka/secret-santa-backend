@@ -3,7 +3,7 @@ SELECT
 	users.*,
 	CAST((MAX(telegram_users.id) IS NOT NULL) AS BOOLEAN) as telegram_activated,
 	CAST(
-		COALESCE(array_agg(user_blocks.id) FILTER (WHERE user_blocks.id IS NOT NULL), '{}')
+		COALESCE(array_agg(user_blocks.blocked_id) FILTER (WHERE user_blocks.id IS NOT NULL), '{}')
 		AS INTEGER[]
 	) as users_blocked
 FROM users
