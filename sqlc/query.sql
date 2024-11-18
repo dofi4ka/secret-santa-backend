@@ -1,8 +1,11 @@
 -- name: ListUsers :many
 SELECT
 	users.*,
-	CAST((ANY_VALUE(telegram_users.id) IS NOT NULL) AS BOOLEAN) as telegram_activated,
-	COUNT(user_blocks) as users_blocked
+	CAST((MAX(telegram_users.id) IS NOT NULL) AS BOOLEAN) as telegram_activated,
+	CAST(
+		COALESCE(array_agg(user_blocks.id) FILTER (WHERE user_blocks.id IS NOT NULL), '{}')
+		AS INTEGER[]
+	) as users_blocked
 FROM users
 LEFT JOIN telegram_users ON users.telegram_id = telegram_users.id
 LEFT JOIN user_blocks ON users.id = user_blocks.blocker_id
