@@ -21,3 +21,6 @@ CREATE TABLE admins (
     username VARCHAR(50) UNIQUE NOT NULL,
 	hashed_password CHAR(60) NOT NULL
 );
+
+CREATE INDEX idx_user_blocks_blocker_id ON user_blocks(blocker_id);
+CREATE INDEX idx_telegram_users_id ON telegram_users(id);
