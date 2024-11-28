@@ -1,8 +1,9 @@
 from fastapi import Depends, HTTPException, status
+from watchfiles import awatch
 
 from app.api.router import api_router
 from app.core.security import get_current_admin
-from app.db import get_db_querier, AsyncQuerier
+from app.db import db_querier_gen, AsyncQuerier
 from app.db.models import Admin, UserBlock
 from app.db.query import ListUserBlocksRow
 
@@ -11,9 +12,9 @@ from app.db.query import ListUserBlocksRow
 async def list_user_blocks(
         blocker_id: int,
         _: Admin = Depends(get_current_admin),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ) -> list[ListUserBlocksRow]:
-    if not querier.check_user_exists(id=blocker_id):
+    if not await querier.check_user_exists(id=blocker_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User with specified id is not found"
@@ -29,9 +30,9 @@ async def block_user(
         blocker_id: int,
         blocked_id: int,
         _: Admin = Depends(get_current_admin),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ) -> UserBlock:
-    if not querier.check_user_exists(id=blocker_id):
+    if not await querier.check_user_exists(id=blocker_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User with specified id is not found"
@@ -42,12 +43,13 @@ async def block_user(
 @api_router.delete("/users/{blocker_id}/blocks/{blocked_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def unblock_user(
         blocker_id: int,
+        blocked_id: int,
         _: Admin = Depends(get_current_admin),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ):
     if not await querier.check_user_exists(id=blocker_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User with specified id is not found"
         )
-    await querier.delete_user(id=blocker_id)
+    await querier.unblock_user(blocked_id=blocked_id, blocker_id=blocker_id)  # todo error handling

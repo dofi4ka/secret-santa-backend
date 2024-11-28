@@ -9,15 +9,23 @@ SELECT
 FROM users
 LEFT JOIN telegram_users ON users.telegram_id = telegram_users.id
 LEFT JOIN user_blocks ON users.id = user_blocks.blocker_id
-GROUP BY users.id;
+GROUP BY users.id
+ORDER BY users.name;
 
 -- name: CreateUser :one
-INSERT INTO users (
-    name, telegram_id
-) VALUES (
-    $1, $2
+WITH returned AS (
+	INSERT INTO users (
+	    name, telegram_id
+	) VALUES (
+	    $1, $2
+	)
+	RETURNING *
 )
-RETURNING *;
+SELECT
+	returned.*,
+	CAST((telegram_users.id IS NOT NULL) AS BOOLEAN) as telegram_activated
+FROM returned
+LEFT JOIN telegram_users ON returned.telegram_id = telegram_users.id;
 
 -- name: CheckUserExists :one
 SELECT 1 FROM users WHERE id = $1 LIMIT 1;
@@ -56,7 +64,8 @@ WHERE blocker_id = $1 and blocked_id = $2;
 
 -- name: AddTelegramUser :exec
 INSERT INTO telegram_users (id)
-VALUES ($1);
+VALUES ($1)
+ON CONFLICT DO NOTHING;
 
 -- name: GetAdmin :one
 SELECT * FROM admins

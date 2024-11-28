@@ -13,7 +13,7 @@ CREATE TABLE user_blocks (
 );
 
 CREATE TABLE telegram_users (
-    id BIGINT NOT NULL
+    id BIGINT NOT NULL UNIQUE
 );
 
 CREATE TABLE admins (

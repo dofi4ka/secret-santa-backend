@@ -2,16 +2,16 @@ from fastapi import Depends, HTTPException, status, Body
 
 from app.api.router import api_router
 from app.core.security import get_current_admin
-from app.db import get_db_querier, AsyncQuerier
+from app.db import db_querier_gen, AsyncQuerier
 from app.db.models import User, Admin
-from app.db.query import ListUsersRow
-from app.schemas.users import CreateUserFrom, UpdateUserFrom
+from app.db.query import ListUsersRow, CreateUserRow
+from app.schemas.users import CreateUserForm, UpdateUserForm
 
 
 @api_router.get("/users")
 async def list_users(
         _: Admin = Depends(get_current_admin),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ) -> list[ListUsersRow]:
     users: list[ListUsersRow] = []
     async for user in querier.list_users():
@@ -22,9 +22,9 @@ async def list_users(
 @api_router.post("/users")
 async def create_user(
         _: Admin = Depends(get_current_admin),
-        data: CreateUserFrom = Body(...),
-        querier: AsyncQuerier = Depends(get_db_querier)
-) -> User:
+        data: CreateUserForm = Body(...),
+        querier: AsyncQuerier = Depends(db_querier_gen)
+) -> CreateUserRow | None:
     return await querier.create_user(name=data.name, telegram_id=data.telegram_id)  # todo error handling
 
 
@@ -32,9 +32,9 @@ async def create_user(
 async def update_user(
         user_id: int,
         _: Admin = Depends(get_current_admin),
-        data: UpdateUserFrom = Body(...),
-        querier: AsyncQuerier = Depends(get_db_querier)
-) -> User:
+        data: UpdateUserForm = Body(...),
+        querier: AsyncQuerier = Depends(db_querier_gen)
+) -> User | None:
     user = await querier.check_user_exists(id=user_id)
     if not user:
         raise HTTPException(
@@ -48,7 +48,7 @@ async def update_user(
 async def delete_user(
         user_id: int,
         _: Admin = Depends(get_current_admin),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ):
     user = await querier.check_user_exists(id=user_id)
     if not user:

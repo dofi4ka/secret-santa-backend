@@ -1,4 +1,4 @@
-import os
+from os import getenv
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -8,14 +8,14 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
-from app.db import get_db_querier, AsyncQuerier
+from app.db import db_querier_gen, AsyncQuerier
 from app.db.models import Admin
 
 auth_router = APIRouter()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60*60*24)
+ACCESS_TOKEN_EXPIRE_MINUTES = getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60*24)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -39,7 +39,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 async def get_current_admin(
         token: str = Depends(oauth2_scheme),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ) -> Admin:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -62,7 +62,7 @@ async def get_current_admin(
 @auth_router.post("/token")
 async def login_for_access_token(
         form_data: OAuth2PasswordRequestForm = Depends(),
-        querier: AsyncQuerier = Depends(get_db_querier)
+        querier: AsyncQuerier = Depends(db_querier_gen)
 ):
     admin = await querier.get_admin(username=form_data.username)
     if not admin or not verify_password(form_data.password, admin.hashed_password):
