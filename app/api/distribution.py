@@ -19,11 +19,10 @@ async def distribute_users(
     distribution_participiants: dict[int, set[int]] = {}
     async for user in querier.list_users():
         distribution_participiants[user.id] = set(user.users_blocked)
+        distribution_participiants[user.id].add(user.id)
         users[user.id] = user
 
     distributed = distribution_with_banlist(distribution_participiants)
-
-    print(distributed)
 
     for user in users.values():
         recepient = users[distributed[user.id]]
