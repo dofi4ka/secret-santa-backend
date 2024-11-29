@@ -11,7 +11,7 @@ from app.bot.broadcast import send_broadcast_message
 
 
 @api_router.post("/distribute")
-async def activate_telegram(
+async def distribute_users(
         _: Admin = Depends(get_current_admin),
         querier: AsyncQuerier = Depends(db_querier_gen)
 ):
