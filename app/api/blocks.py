@@ -1,5 +1,4 @@
 from fastapi import Depends, HTTPException, status
-from watchfiles import awatch
 
 from app.api.router import api_router
 from app.core.security import get_current_admin

@@ -10,6 +10,7 @@ from app.bot.start import start_router
 
 _TOKEN = getenv("BOT_TOKEN")
 _dispatcher: Dispatcher
+bot_instance = Bot(token=_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 @asynccontextmanager
 async def bot_lifespan():
@@ -19,7 +20,7 @@ async def bot_lifespan():
 
     asyncio.get_event_loop().create_task(
         _dispatcher.start_polling(
-            Bot(token=_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+            bot_instance
         )
     )
     try:
