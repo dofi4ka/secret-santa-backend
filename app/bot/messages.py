@@ -3,7 +3,7 @@ environment = jinja2.Environment(autoescape=True)
 
 
 START_USER_FOUND = environment.from_string("""
-✅ Telegram ID найден в базе под именем <b>{{ name }}</b>
+✅ Вы приглашены как <b>{{ name }}</b>
 
 ℹ️ <i>Если вы видите это сообщение вам больше не нужно ничего предпринимать, \
 рассылка с адресатом подарка пройдёт автоматически, \
@@ -11,7 +11,7 @@ START_USER_FOUND = environment.from_string("""
 """)
 
 START_USER_NOT_FOUND = environment.from_string("""
-❌ Telegram ID не найден в базе, скорее всего вас спросить забыли
+❌ Telegram ID не найден, скорее всего вас спросить забыли
 
 ❓ <i>Если вы считаете, что произошла ошибка, обратитесь к администратору</i>
 """.strip())
