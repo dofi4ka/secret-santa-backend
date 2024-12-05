@@ -1,10 +1,8 @@
 from contextlib import asynccontextmanager
 from os import getenv
-from symtable import Function
 from typing import AsyncGenerator, AsyncContextManager, TypeAlias
 
 from asyncpg import Pool, create_pool
-from pygments.lexer import default
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from app.db import models

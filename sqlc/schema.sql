@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    telegram_id INTEGER NOT NULL UNIQUE,
+    telegram_id BIGINT NOT NULL UNIQUE,
     flags INTEGER DEFAULT 0
 );
 
