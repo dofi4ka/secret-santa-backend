@@ -2,10 +2,12 @@ from fastapi import Depends, HTTPException, status, Body
 
 from app.api.router import api_router
 from app.core.security import get_current_admin
-from app.db import db_querier_gen, AsyncQuerier
-from app.db.models import User, Admin
-from app.db.query import ListUsersRow, CreateUserRow
-from app.schemas.users import CreateUserForm, UpdateUserForm
+from app.db import (
+    db_querier_gen, AsyncQuerier,
+    ListUsersRow, CreateUserRow,
+    User, Admin
+)
+from app.schemas import CreateUserForm, UpdateUserForm
 
 
 @api_router.get("/users")

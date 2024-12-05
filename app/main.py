@@ -17,7 +17,7 @@ async def app_lifespan(app: FastAPI):  # noqa
 
 app = FastAPI(
     lifespan=app_lifespan,
-    openapi_prefix=getenv("OPENAPI_PREFIX", "/api")
+    root_path=getenv("ROOT_PATH", "/api")
 )
 
 app.include_router(auth_router)

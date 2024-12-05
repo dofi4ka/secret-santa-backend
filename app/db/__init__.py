@@ -5,8 +5,8 @@ from typing import AsyncGenerator, AsyncContextManager, TypeAlias
 from asyncpg import Pool, create_pool
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from app.db import models
-from app.db.query import AsyncQuerier
+from app.db.models import *
+from app.db.query import *
 
 _DATABASE_URL = getenv("DATABASE_URL")
 _db_pool: Pool

@@ -2,9 +2,11 @@ from fastapi import Depends
 
 from app.api.router import api_router
 from app.core.security import get_current_admin
-from app.db import db_querier_gen, AsyncQuerier
-from app.db.models import Admin
-from app.db.query import ListUsersRow
+from app.db import (
+    db_querier_gen, AsyncQuerier,
+    ListUsersRow,
+    Admin
+)
 from app.utils import distribution_with_banlist
 
 from app.bot.broadcast import send_broadcast_message
@@ -29,4 +31,3 @@ async def distribute_users(
         print(f"{user.name} -> {recepient.name}")
         if user.telegram_activated:
             await send_broadcast_message(user.telegram_id, recepient.name)
-

@@ -2,9 +2,11 @@ from fastapi import Depends, HTTPException, status
 
 from app.api.router import api_router
 from app.core.security import get_current_admin
-from app.db import db_querier_gen, AsyncQuerier
-from app.db.models import Admin, UserBlock
-from app.db.query import ListUserBlocksRow
+from app.db import (
+    AsyncQuerier, db_querier_gen,
+    ListUserBlocksRow,
+    Admin, UserBlock
+)
 
 
 @api_router.get("/users/{blocker_id}/blocks")

@@ -8,16 +8,18 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
-from app.db import db_querier_gen, AsyncQuerier
-from app.db.models import Admin
+from app.db import (
+    db_querier_gen, AsyncQuerier,
+    Admin
+)
 
 auth_router = APIRouter()
 
 SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60*24)
+ACCESS_TOKEN_EXPIRE_MINUTES = getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24)
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -72,7 +74,8 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(
-        data={"sub": admin.username}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        data={"sub": admin.username},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -84,5 +87,5 @@ class Me:
 
 
 @auth_router.get("/me")
-async def read_me(current_admin: Admin = Depends(get_current_admin)) -> Me:
+async def admin_info(current_admin: Admin = Depends(get_current_admin)) -> Me:
     return Me(id=current_admin.id, username=current_admin.username)

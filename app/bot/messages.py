@@ -1,6 +1,6 @@
 import jinja2
-environment = jinja2.Environment(autoescape=True)
 
+environment = jinja2.Environment(autoescape=True)
 
 START_USER_FOUND = environment.from_string("""
 ✅ Вы приглашены как <b>{{ name }}</b>
@@ -8,7 +8,7 @@ START_USER_FOUND = environment.from_string("""
 ℹ️ <i>Если вы видите это сообщение вам больше не нужно ничего предпринимать, \
 рассылка с адресатом подарка пройдёт автоматически, \
 не блокируйте бота чтобы сообщение дошло без проблем</i>
-""")
+""".strip())
 
 START_USER_NOT_FOUND = environment.from_string("""
 ❌ Telegram ID не найден, скорее всего вас спросить забыли

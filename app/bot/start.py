@@ -8,6 +8,7 @@ from app.bot.messages import START_USER_FOUND, START_USER_NOT_FOUND
 
 start_router = Router(name=__name__)
 
+
 @start_router.message(CommandStart())
 async def command_start_handler(message: Message):
     async with db_querier_context() as querier:
