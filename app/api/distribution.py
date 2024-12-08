@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 from app.api.router import api_router
 from app.core.security import get_current_admin
@@ -7,7 +7,7 @@ from app.db import (
     ListUsersRow,
     Admin
 )
-from app.utils import distribution_with_banlist
+from app.utils import distribution_with_banlist, ParticipiantHasNoOptions
 
 from app.bot.broadcast import send_broadcast_message
 
@@ -24,10 +24,12 @@ async def distribute_users(
         distribution_participiants[user.id].add(user.id)
         users[user.id] = user
 
-    distributed = distribution_with_banlist(distribution_participiants)
+    try:
+        distributed = distribution_with_banlist(distribution_participiants)
 
-    for user in users.values():
-        recepient = users[distributed[user.id]]
-        print(f"{user.name} -> {recepient.name}")
-        if user.telegram_activated:
-            await send_broadcast_message(user.telegram_id, recepient.name)
+        for user in users.values():
+            recepient = users[distributed[user.id]]
+            if user.telegram_activated:
+                await send_broadcast_message(user.telegram_id, recepient.name)
+    except ParticipiantHasNoOptions as e:
+        raise HTTPException(status_code=409, detail=f"{users[e.participiant]!r} has no options")
